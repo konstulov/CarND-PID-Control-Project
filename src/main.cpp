@@ -14,6 +14,10 @@ constexpr double pi() { return M_PI; }
 double deg2rad(double x) { return x * pi() / 180; }
 double rad2deg(double x) { return x * 180 / pi(); }
 
+const double tau_p = 0.2;
+const double tau_d = 3.0;
+const double tau_i = 0.0;
+
 // Checks if the SocketIO event has JSON data.
 // If there is data the JSON object in string format will be returned,
 // else the empty string "" will be returned.
@@ -37,8 +41,10 @@ int main() {
   /**
    * TODO: Initialize the pid variable.
    */
+  double prev_cte = 0.0;
+  double int_cte = 0.0;
 
-  h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 
+  h.onMessage([&pid, &prev_cte, &int_cte](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
@@ -56,7 +62,13 @@ int main() {
           double cte = std::stod(j[1]["cte"].get<string>());
           double speed = std::stod(j[1]["speed"].get<string>());
           double angle = std::stod(j[1]["steering_angle"].get<string>());
-          double steer_value;
+          if (prev_cte == 0.0) {
+            prev_cte = cte;
+          }
+          double diff_cte = cte - prev_cte;
+          prev_cte = cte;
+          int_cte += cte;
+          double steer_value = -tau_p * cte - tau_d * diff_cte - tau_i * int_cte;
           /**
            * TODO: Calculate steering value here, remember the steering value is
            *   [-1, 1].
