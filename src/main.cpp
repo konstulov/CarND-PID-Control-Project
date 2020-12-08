@@ -18,7 +18,7 @@ double rad2deg(double x) { return x * 180 / pi(); }
 
 // initial parameter values
 // these values were reached after 108 cycles of training starting at {0.1, 3.0, 0.004}
-const vector<double> init_p = {0.12, 3.4, 0.0045}; // {0.111518, 4.08299, 0.00403688}; // {0.123803, 3.3709, 0.00450544}
+const vector<double> init_p = {0.12, 3.4, 0.0045}; // {0.123803, 3.3709, 0.00450544}
 // change in parameter values (for the Twiddle Algorithm)
 // converged to these values after 279 cycles of training starting at {0.01, 0.3, 0.0004};
 const vector<double> init_dp = {2.80662e-07, 1.0291e-05, 1.12265e-08}; // {0.03, 0.8, 0.001};
@@ -67,10 +67,6 @@ double sum(const vector<double>& v) {
 int main() {
   uWS::Hub h;
 
-  PID pid;
-  /**
-   * TODO: Initialize the pid variable.
-   */
   // parameter vector
   vector<double> p = init_p;
   // change in parameter vector (for the Twiddle Algorithm)
@@ -89,8 +85,8 @@ int main() {
   // boolean flag to toggle Twiddle algo b/w increasing and decreasing parameter values
   bool increase = true;
 
-  h.onMessage([&pid, &p, &dp, &ctes, &int_cte, &counter, &err, &best_err, &increase](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
-                     uWS::OpCode opCode) {
+  h.onMessage([&p, &dp, &ctes, &int_cte, &counter, &err, &best_err, &increase](
+      uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -179,8 +175,6 @@ int main() {
               }
             }
           }
-          
-
           counter++;
           err += cte * cte;
           double prev_cte = ctes[(idx+1) % n_diff];
@@ -193,12 +187,6 @@ int main() {
             std::cout << "CTE: " << cte << " diff_cte: " << diff_cte << " int_cte: "
             << int_cte << " Steering Value: " << steer_value << std::endl;
           }
-          /**
-           * TODO: Calculate steering value here, remember the steering value is
-           *   [-1, 1].
-           * NOTE: Feel free to play around with the throttle and speed.
-           *   Maybe use another PID controller to control the speed!
-           */
           // set throttle to be between min_throttle and max_throttle
           //double throttle = min_throttle + (max_throttle - min_throttle) * (max_steer - fabs(steer_value)) / max_steer;
           double throttle = min_throttle + (max_throttle - min_throttle) / (inv_scale * fabs(steer_value) + 1);
