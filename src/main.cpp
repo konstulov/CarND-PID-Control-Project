@@ -190,9 +190,8 @@ int main() {
           // clip steer value to be b/w -max_steer and max_steer
           steer_value = std::min(max_steer, std::max(-max_steer, steer_value));
           if (counter % n_show == 0) {
-            double cycle_err = err / (cycle_step+1);
-            std::cout << "counter = " << counter << ", best_err = " << best_err << ", cycle_err = " << cycle_err << ", diff_cte = " << diff_cte << ", int_cte = " << int_cte << std::endl;
-            std::cout << "CTE: " << cte << " diff_cte: " << diff_cte << " int_cte: " << int_cte << " Steering Value: " << steer_value << std::endl;
+            std::cout << "CTE: " << cte << " diff_cte: " << diff_cte << " int_cte: "
+            << int_cte << " Steering Value: " << steer_value << std::endl;
           }
           /**
            * TODO: Calculate steering value here, remember the steering value is
